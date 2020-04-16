@@ -30,5 +30,14 @@ describe('HeroesComponent', () => {
 
       expect(component.heroes).toEqual(heroes);
     });
+
+    it('should call deleteHero with Hero param', () => {
+      mockHeroesService.deleteHero.and.returnValue(of(true));
+      component.heroes = HEROES;
+
+      component.delete(HEROES[1]);
+
+      expect(mockHeroesService.deleteHero).toHaveBeenCalledWith(HEROES[1]);
+    })
   });
 });
