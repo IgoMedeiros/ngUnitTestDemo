@@ -6,47 +6,38 @@ import { Hero } from "../hero";
 import { of } from "rxjs";
 import { By } from "@angular/platform-browser";
 import { HEROES } from "../mock-heroes";
+import { HeroComponent } from "../hero/hero.component";
 
-describe('HeroesComponent (shallow tests)', () => {
+describe('HeroesComponent (deep tests)', () => {
   let fixture: ComponentFixture<HeroesComponent>;
   let mockHeroService;
-
-  @Component({
-    selector: 'app-hero',
-    template: '<div></div>'
-  })
-  class FakeHeroComponent {
-    @Input() hero: Hero;
-  }
 
   beforeEach(() => {
     mockHeroService = jasmine.createSpyObj(['getHeroes', 'addHero', 'deleteHero']);
     TestBed.configureTestingModule({
       declarations: [
         HeroesComponent,
-        FakeHeroComponent
+        HeroComponent
       ],
       providers: [
         {
           provide: HeroService,
           useValue: mockHeroService
         }
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     });
     fixture = TestBed.createComponent(HeroesComponent);
   });
 
-  it('should set heroes correctly from the service', () => {
+  it('should render each hero as a HeroComponent', () => {
     mockHeroService.getHeroes.and.returnValue(of(HEROES));
+
+    // run ngOnInit
     fixture.detectChanges();
 
-    expect(fixture.componentInstance.heroes.length).toBe(3);
-  });
+    const heroComponentDEs = fixture.debugElement.queryAll(By.directive(HeroComponent));
 
-  it('should create one li for each hero', () => {
-    mockHeroService.getHeroes.and.returnValue(of(HEROES));
-    fixture.detectChanges();
-
-    expect(fixture.debugElement.queryAll(By.css('li')).length).toBe(3);
+    expect(heroComponentDEs.length).toBe(3);
   });
 });
